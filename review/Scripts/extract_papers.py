@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional, Dict, Type
 import pandas as pd
 from review.Scripts.paper import Paper
+import ElsevierClient
 # --- GOOGLE SCHOLAR IMPORT & CHECK ---
 def start_gs():
     try:
@@ -15,11 +16,11 @@ def start_gs():
         ) from e
 
 # --- ELSEVIER IMPORT & CHECK ---
-def start_elsevier():
-    try:
-        from elsevier_api import ElsevierClient  # Replace with your actual Elsevier API client library
-    except ImportError as e:
-        pass
+
+try:
+    from elsevier_api import ElsevierClient  # Replace with your actual Elsevier API client library
+except ImportError as e:
+    pass
 
 
 
@@ -112,7 +113,7 @@ class ScopusExtractor(PaperExtractor):
 
 # --- ELSEVIER IMPLEMENTATION (DEMO) ---
 class ElsevierExtractor(PaperExtractor):
-    start_elsevier()
+
     def extract(self, query: str, api_key: str, batch_size: int = 25, max_batches: Optional[int] = None) -> List[Paper]:
         # Replace this with your actual Elsevier API client logic
         client = ElsevierClient(api_key=api_key)
