@@ -3,35 +3,39 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, Dict, Type
 import pandas as pd
-
+from review.Scripts.paper import Paper
 # --- GOOGLE SCHOLAR IMPORT & CHECK ---
-try:
-    from serpapi import GoogleSearch
-except ImportError as e:
-    raise ImportError(
+def start_gs():
+    try:
+       from serpapi import GoogleSearch
+    except ImportError as e:
+       raise ImportError(
         "The 'serpapi' package is required for Google Scholar extraction. "
         "Install it with 'pip install serpapi'."
-    ) from e
+        ) from e
 
-# --- SCOPUS IMPORT & CHECK ---
+# --- ELSEVIER IMPORT & CHECK ---
+def start_elsevier():
+    try:
+        from elsevier_api import ElsevierClient  # Replace with your actual Elsevier API client library
+    except ImportError as e:
+        pass
+
+
+
 try:
+    import pybliometrics
+    pybliometrics.init()
     from pybliometrics.scopus import ScopusSearch
 except ImportError as e:
     raise ImportError(
         "The 'pybliometrics' package is required for Scopus extraction. "
-        "Install it with 'pip install pybliometrics'."
-    ) from e
+            "Install it with 'pip install pybliometrics'."
+        ) from e
 
-# --- ELSEVIER IMPORT & CHECK ---
-try:
-    from elsevier_api import ElsevierClient  # Replace with your actual Elsevier API client library
-except ImportError as e:
-    raise ImportError(
-        "The 'elsevier-api' package is required for Elsevier extraction. "
-        "Install it with 'pip install elsevier-api' or adjust the import according to your API client."
-    ) from e
 
-from .paper import Paper  # Assuming paper.py is in the same folder
+
+
 
 # --- ABSTRACTION LAYER ---
 class PaperExtractor(ABC):
@@ -42,6 +46,7 @@ class PaperExtractor(ABC):
 
 # --- GOOGLE SCHOLAR IMPLEMENTATION ---
 class GoogleScholarExtractor(PaperExtractor):
+    start_gs()
     def extract(self, query: str, api_key: str, batch_size: int = 10, max_batches: Optional[int] = None) -> List[Paper]:
         search = GoogleSearch({
             "q": query,
@@ -85,6 +90,7 @@ class GoogleScholarExtractor(PaperExtractor):
 
 # --- SCOPUS IMPLEMENTATION (MINIMAL) ---
 class ScopusExtractor(PaperExtractor):
+
     def extract(self, query: str, api_key: str, batch_size: int = 25, max_batches: Optional[int] = None) -> List[Paper]:
         # Assumes ScopusSearch is configured to use your API Key (pybliometrics uses config/scopus.ini)
         scopus_search = ScopusSearch(query)
@@ -106,6 +112,7 @@ class ScopusExtractor(PaperExtractor):
 
 # --- ELSEVIER IMPLEMENTATION (DEMO) ---
 class ElsevierExtractor(PaperExtractor):
+    start_elsevier()
     def extract(self, query: str, api_key: str, batch_size: int = 25, max_batches: Optional[int] = None) -> List[Paper]:
         # Replace this with your actual Elsevier API client logic
         client = ElsevierClient(api_key=api_key)
