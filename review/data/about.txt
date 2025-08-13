@@ -1,0 +1,27 @@
+Using statistical models to improve decision-making and performance within organizations is now a traditional
+practice. Yet many analytics outcomes get buried once they reach operations. While operational analytics
+aims to bridge this gap, aims to connect insight to action, it often lacks the mechanisms to adapt to human
+intervention. The failure of these operations – based on current statistics – shows that this time the problem is
+not in the methodology and business model, but rather in trust misalignment between the artificial and the
+conscious.
+
+Human oversight in Automated Decision-Making Systems (ADMS) doesn’t always present a flaw. In fact,
+historical failures, such as automation attempts in healthcare during the 1960s and ’70s, highlight the risks
+of removing human oversight. Although solutions and new systems were put into action, studies show that
+override rates can range from 40 % to over 70 % [3]. Then we find ourselves in the same old dilemma of balancing
+the power between humans and AI.
+
+Most dashboards stop at generating recommendations; they do not track whether decisions were followed
+or overridden, or why. While we are not observing the transition from analytics to operations, failure is a
+promised result. This absence of feedback mechanisms limits system learning, trust calibration, and alignment
+between model logic and user behavior.
+
+Override decisions follow observable patterns influenced by trust, confidence, urgency, and explanation
+clarity—these can be modeled probabilistically. Probabilistic models treat override not as noise but as a behavioral
+signal; therefore they provide measures and distributions, as well as uncertainty levels. This enables a feedback
+loop that helps the system adapt to justified overrides and adjusts either the predictive model or the human
+interface.
+
+In this contribution, we suggest a HOVER (Human Override-aware Validation and Enrichment Response)
+framework integrating override behavior into the operational analytics pipeline within a feedback-aware
+architecture, which will decrease resource waste caused by unactionable insights and recommendations.

@@ -6,6 +6,18 @@ import pandas as pd
 import openai
 
 
+try:
+    from tqdm.notebook import tqdm
+    use_tqdm = True
+except ImportError:
+    try:
+        from tqdm import tqdm
+        use_tqdm = True
+    except ImportError:
+        tqdm = None
+        use_tqdm = False
+
+
 def gpt_filter_by_list_response(
     items: List[str],
     client: openai.OpenAI,
@@ -106,27 +118,43 @@ def filter_journal_dataframe(
     column_names: List[str],
     context_text: str,
     strategy: str = "dict",  # can be "dict" or "list"
-    chunk_size: int = 100
+    chunk_size: int = 100,
+    model: str = "gpt-4o-2024-05-13"
 ) -> pd.DataFrame:
     """
     Filters irrelevant rows from a DataFrame based on GPT classification of selected columns.
 
     Parameters:
         strategy: Either 'dict' (for classification) or 'list' (for list-returning prompt)
+        model: The LLM model name to use (e.g., 'gpt-4o-2024-05-13', 'mistral-small', etc.)
+    Returns the filtered DataFrame, even if interrupted by an exception (e.g., rate limit).
     """
     irrelevant_all = set()
-
-    for col in column_names:
-        unique_values = df[col].dropna().unique().tolist()
-        for chunk in chunked(unique_values, chunk_size):
-            if strategy == "dict":
-                irrelevant = gpt_filter_by_dict_classification(chunk, client, col, context_text)
-            elif strategy == "list":
-                irrelevant = gpt_filter_by_list_response(chunk, client, col, context_text)
+    filtered_df = df.copy()
+    try:
+        for col in column_names:
+            unique_values = filtered_df[col].dropna().unique().tolist()
+            chunks = list(chunked(unique_values, chunk_size))
+            total_chunks = len(chunks)
+            print(f"[GPT Filter] Starting filtering for column '{col}' with {total_chunks} chunk(s)...")
+            if use_tqdm and tqdm is not None:
+                chunk_iter = tqdm(enumerate(chunks), total=total_chunks, desc=f"Filtering {col}", leave=True, dynamic_ncols=True)
             else:
-                raise ValueError("Strategy must be either 'dict' or 'list'")
-            irrelevant_all.update(irrelevant)
-
-        df = df[~df[col].isin(irrelevant_all)]
-
-    return df
+                chunk_iter = enumerate(chunks)
+            for i, chunk in chunk_iter:
+                if strategy == "dict":
+                    irrelevant = gpt_filter_by_dict_classification(chunk, client, col, context_text, model=model)
+                elif strategy == "list":
+                    irrelevant = gpt_filter_by_list_response(chunk, client, col, context_text, model=model)
+                else:
+                    raise ValueError("Strategy must be either 'dict' or 'list'")
+                irrelevant_all.update(irrelevant)
+                filtered_df = filtered_df[~filtered_df[col].isin(irrelevant_all)]
+                if not use_tqdm:
+                    percent = ((i+1)/total_chunks)*100
+                    print(f"[GPT Filter] {col}: Chunk {i+1}/{total_chunks} ({percent:.1f}%) done.")
+            print(f"[GPT Filter] Completed filtering for column '{col}'.")
+        return filtered_df
+    except Exception as e:
+        print(f"[GPT Filter] Exception occurred: {e}. Returning filtered results so far.")
+        return filtered_df
