@@ -3,8 +3,7 @@ import ast
 from typing import List, Dict
 from more_itertools import chunked
 import pandas as pd
-import openai
-
+from mistralai import Mistral
 
 try:
     from tqdm.notebook import tqdm
@@ -17,12 +16,27 @@ except ImportError:
         tqdm = None
         use_tqdm = False
 
+import re
+import ast
+
+def extract_dict_from_response(raw_response):
+    # This regex matches the dictionary in the response
+    match = re.search(r'(\{.*\})', raw_response, re.DOTALL)
+    if match:
+        dict_str = match.group(1)
+        try:
+            return ast.literal_eval(dict_str)
+        except Exception as e:
+            print("Failed to parse dictionary:", e)
+            return {}
+    return {}
 
 def gpt_filter_by_list_response(
     items: List[str],
-    client: openai.OpenAI,
+    client: Mistral,
     column_name: str,
-    context_text: str
+    context_text: str,
+    model:str = 'mistral-small'
 ) -> List[str]:
     """
     Uses GPT to return a list of irrelevant items directly.
@@ -47,114 +61,101 @@ def gpt_filter_by_list_response(
         }
     ]
 
-    response = client.chat.completions.create(
-        model="gpt-4o-2024-05-13",
+    response = client.chat.complete(
+        model= model,
         messages=messages,
         temperature=0
     )
     raw = response.choices[0].message.content
     raw = re.sub(r"```(?:python)?", "", raw).strip()
-
-    try:
-        result: List[str] = ast.literal_eval(raw)
-        return result if isinstance(result, list) else []
-    except Exception as e:
-        print("Failed to parse GPT output (list response):", e)
-        print("Raw response:\n", raw[:1000])
-        return []
+    result = extract_dict_from_response(raw)
+    if not result:
+        print("Failed to parse model response for chunk:", chunk[:50])
+        return [False] * len(chunk)  # or handle as needed
+    return [val == 0 for val in result.values()]
 
 
 def gpt_filter_by_dict_classification(
-    items: List[str],
-    client: openai.OpenAI,
-    column_name: str,
-    context_text: str
-) -> List[str]:
-    """
-    Uses GPT to classify items with a 0/1 label and returns items classified as 0 (irrelevant).
-    """
-    messages = [
-        {
-            "role": "system",
-            "content": "You are a classification agent that returns whether each item is relevant (1) or irrelevant (0)."
-        },
-        {
-            "role": "system",
-            "content": f"The following is the project context:\n\n{context_text}"
-        },
-        {
-            "role": "user",
-            "content": (
-                f"Given the list of values from column '{column_name}', classify each item "
-                f"as relevant (1) or irrelevant (0).\n\n"
-                f"Return ONLY a valid Python dictionary like this:\n"
-                f"{{'item1': 1, 'item2': 0}}\n\n"
-                f"Here is the list:\n{items}"
-            )
-        }
-    ]
-
-    response = client.chat.completions.create(
-        model="gpt-4o-2024-05-13",
-        messages=messages,
-        temperature=0
-    )
-
-    raw = response.choices[0].message.content
-    raw = re.sub(r"```(?:python)?", "", raw).strip()
-
-    try:
-        result: Dict[str, int] = ast.literal_eval(raw)
+            items: List[str],
+            client: Mistral,
+            column_name: str,
+            context_text: str,
+            model: str = 'mistral-small'
+    ) -> List[str]:
+        messages = [
+            {
+                "role": "system",
+                "content": "You are a classification agent that returns whether each item is relevant (1) or irrelevant (0)."
+            },
+            {
+                "role": "system",
+                "content": f"The following is the project context:\n\n{context_text}"
+            },
+            {
+                "role": "user",
+                "content": (
+                    f"Given the list of values from column '{column_name}', classify each item "
+                    f"as relevant (1) or irrelevant (0).\n\n"
+                    f"Return ONLY a valid Python dictionary like this:\n"
+                    f"{{'item1': 1, 'item2': 0}}\n\n"
+                    f"Here is the list:\n{items}"
+                )
+            }
+        ]
+        response = client.chat.complete(
+            model=model,
+            messages=messages,
+            temperature=0
+        )
+        raw = response.choices[0].message.content
+        raw = re.sub(r"```(?\:python)?", "", raw).strip()
+        result = extract_dict_from_response(raw)
+        if not result:
+            print("Failed to parse model response for chunk:", items[:50])
+            return []  # or return items
         return [item for item, val in result.items() if val == 0]
-    except Exception as e:
-        print("Failed to parse GPT output (dict response):", e)
-        print("Raw response:\n", raw[:1000])
-        return []
-
 
 def filter_journal_dataframe(
-    df: pd.DataFrame,
-    client: openai.OpenAI,
-    column_names: List[str],
-    context_text: str,
-    strategy: str = "dict",  # can be "dict" or "list"
-    chunk_size: int = 100,
-    model: str = "gpt-4o-2024-05-13"
-) -> pd.DataFrame:
-    """
-    Filters irrelevant rows from a DataFrame based on GPT classification of selected columns.
-
-    Parameters:
-        strategy: Either 'dict' (for classification) or 'list' (for list-returning prompt)
-        model: The LLM model name to use (e.g., 'gpt-4o-2024-05-13', 'mistral-small', etc.)
-    Returns the filtered DataFrame, even if interrupted by an exception (e.g., rate limit).
-    """
-    irrelevant_all = set()
-    filtered_df = df.copy()
-    try:
-        for col in column_names:
-            unique_values = filtered_df[col].dropna().unique().tolist()
-            chunks = list(chunked(unique_values, chunk_size))
-            total_chunks = len(chunks)
-            print(f"[GPT Filter] Starting filtering for column '{col}' with {total_chunks} chunk(s)...")
-            if use_tqdm and tqdm is not None:
-                chunk_iter = tqdm(enumerate(chunks), total=total_chunks, desc=f"Filtering {col}", leave=True, dynamic_ncols=True)
-            else:
-                chunk_iter = enumerate(chunks)
-            for i, chunk in chunk_iter:
-                if strategy == "dict":
-                    irrelevant = gpt_filter_by_dict_classification(chunk, client, col, context_text, model=model)
-                elif strategy == "list":
-                    irrelevant = gpt_filter_by_list_response(chunk, client, col, context_text, model=model)
-                else:
-                    raise ValueError("Strategy must be either 'dict' or 'list'")
-                irrelevant_all.update(irrelevant)
-                filtered_df = filtered_df[~filtered_df[col].isin(irrelevant_all)]
-                if not use_tqdm:
-                    percent = ((i+1)/total_chunks)*100
-                    print(f"[GPT Filter] {col}: Chunk {i+1}/{total_chunks} ({percent:.1f}%) done.")
-            print(f"[GPT Filter] Completed filtering for column '{col}'.")
-        return filtered_df
-    except Exception as e:
-        print(f"[GPT Filter] Exception occurred: {e}. Returning filtered results so far.")
-        return filtered_df
+            df: pd.DataFrame,
+            client: Mistral,
+            column_names: List[str],
+            context_text: str,
+            strategy: str = "dict",
+            chunk_size: int = 100,
+            model: str = 'mistral-small',
+            use_tqdm: bool = True
+    ) -> pd.DataFrame:
+        filtered_df = df.copy()
+        try:
+            for col in column_names:
+                irrelevant_col = set()
+                unique_values = filtered_df[col].dropna().unique().tolist()
+                chunks = list(chunked(unique_values, chunk_size))
+                total_chunks = len(chunks)
+                print(f"[GPT Filter] Starting filtering for column '{col}' with {total_chunks} chunk(s)...")
+                chunk_iter = tqdm(enumerate(chunks), total=total_chunks, desc=f"Filtering {col}", leave=True,
+                                  dynamic_ncols=True) if use_tqdm and tqdm else enumerate(chunks)
+                for i, chunk in chunk_iter:
+                    print(f"Chunk size: {len(chunk)}")
+                    if strategy == "dict":
+                        irrelevant = gpt_filter_by_dict_classification(chunk, client, col, context_text, model)
+                    elif strategy == "list":
+                        irrelevant = gpt_filter_by_list_response(chunk, client, col, context_text, model)
+                    else:
+                        raise ValueError("Strategy must be either 'dict' or 'list'")
+                    irrelevant_col.update(irrelevant)
+                    if not use_tqdm:
+                        percent = ((i + 1) / total_chunks) * 100
+                        print(f"[Model Filter] {col}: Chunk {i + 1}/{total_chunks} ({percent:.1f}%) done.")
+                filtered_df = filtered_df[~filtered_df[col].isin(irrelevant_col)]
+                print(f"[Model Filter] Completed filtering for column '{col}'.")
+            return filtered_df
+        except Exception as e:
+            print(f"[Model Filter] Exception occurred: {e}. ")
+            print("[Model Filter] Returning partially filtered DataFrame.")
+            return filtered_df
+# TODO : return the filtered DataFrame with a new column indicating relevance
+# TODO : add a column with the context text used for filtering
+# TODO : add a column with the strategy used for filtering
+# TODO : retu=rn the chunks seperately as subsets
+# TODO : chheck the loop around columns and chunks
