@@ -70,8 +70,7 @@ def gpt_filter_by_list_response(
     raw = re.sub(r"```(?:python)?", "", raw).strip()
     result = extract_dict_from_response(raw)
     if not result:
-        print("Failed to parse model response for chunk:", chunk[:50])
-        return [False] * len(chunk)  # or handle as needed
+        return [False]  # or handle as needed
     return [val == 0 for val in result.values()]
 
 
@@ -116,46 +115,54 @@ def gpt_filter_by_dict_classification(
         return [item for item, val in result.items() if val == 0]
 
 def filter_journal_dataframe(
-            df: pd.DataFrame,
-            client: Mistral,
-            column_names: List[str],
-            context_text: str,
-            strategy: str = "dict",
-            chunk_size: int = 100,
-            model: str = 'mistral-small',
-            use_tqdm: bool = True
-    ) -> pd.DataFrame:
-        filtered_df = df.copy()
-        try:
-            for col in column_names:
-                irrelevant_col = set()
-                unique_values = filtered_df[col].dropna().unique().tolist()
+    df: pd.DataFrame,
+    client: Mistral,
+    column_names: List[str],
+    context_text: str,
+    strategy: str = "dict",
+    use_chunks: bool = False,
+    chunk_size: int = 100,
+    model: str = 'mistral-small',
+    use_tqdm: bool = True
+) -> pd.DataFrame:
+    filtered_df = df.copy()
+    try:
+        for col in column_names:
+            irrelevant_col = set()
+            unique_values = filtered_df[col].dropna().unique().tolist()
+
+            # Check if chunking should be used
+            if use_chunks:
                 chunks = list(chunked(unique_values, chunk_size))
                 total_chunks = len(chunks)
                 print(f"[GPT Filter] Starting filtering for column '{col}' with {total_chunks} chunk(s)...")
                 chunk_iter = tqdm(enumerate(chunks), total=total_chunks, desc=f"Filtering {col}", leave=True,
                                   dynamic_ncols=True) if use_tqdm and tqdm else enumerate(chunks)
-                for i, chunk in chunk_iter:
-                    print(f"Chunk size: {len(chunk)}")
-                    if strategy == "dict":
-                        irrelevant = gpt_filter_by_dict_classification(chunk, client, col, context_text, model)
-                    elif strategy == "list":
-                        irrelevant = gpt_filter_by_list_response(chunk, client, col, context_text, model)
-                    else:
-                        raise ValueError("Strategy must be either 'dict' or 'list'")
-                    irrelevant_col.update(irrelevant)
-                    if not use_tqdm:
-                        percent = ((i + 1) / total_chunks) * 100
-                        print(f"[Model Filter] {col}: Chunk {i + 1}/{total_chunks} ({percent:.1f}%) done.")
-                filtered_df = filtered_df[~filtered_df[col].isin(irrelevant_col)]
-                print(f"[Model Filter] Completed filtering for column '{col}'.")
-            return filtered_df
-        except Exception as e:
-            print(f"[Model Filter] Exception occurred: {e}. ")
-            print("[Model Filter] Returning partially filtered DataFrame.")
-            return filtered_df
-# TODO : return the filtered DataFrame with a new column indicating relevance
-# TODO : add a column with the context text used for filtering
-# TODO : add a column with the strategy used for filtering
-# TODO : retu=rn the chunks seperately as subsets
-# TODO : chheck the loop around columns and chunks
+            else:
+                # Treat all unique values as a single chunk
+                chunks = [unique_values]
+                total_chunks = 1
+                print(f"[GPT Filter] Starting filtering for column '{col}' as a single chunk...")
+                chunk_iter = [(0, chunks[0])]  # Simulating a single chunk iteration
+
+            for i, chunk in chunk_iter:
+                print(f"Chunk size: {len(chunk)}")
+                if strategy == "dict":
+                    irrelevant = gpt_filter_by_dict_classification(chunk, client, col, context_text, model)
+                elif strategy == "list":
+                    irrelevant = gpt_filter_by_list_response(chunk, client, col, context_text, model)
+                else:
+                    raise ValueError("Strategy must be either 'dict' or 'list'")
+
+                irrelevant_col.update(irrelevant)
+                if not use_tqdm:
+                    percent = ((i + 1) / total_chunks) * 100
+                    print(f"[Model Filter] {col}: Chunk {i + 1}/{total_chunks} ({percent:.1f}%) done.")
+
+            filtered_df = filtered_df[~filtered_df[col].isin(irrelevant_col)]
+            print(f"[Model Filter] Completed filtering for column '{col}'.")
+        return filtered_df
+    except Exception as e:
+        print(f"[Model Filter] Exception occurred: {e}. ")
+        print("[Model Filter] Returning partially filtered DataFrame.")
+        return filtered_df
