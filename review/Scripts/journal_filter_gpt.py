@@ -67,7 +67,7 @@ def gpt_filter_by_list_response(
         temperature=0
     )
     raw = response.choices[0].message.content
-    raw = re.sub(r"```(?:python)?", "", raw).strip()
+    raw = re.sub(r"```[\w]*", "", raw).strip()
     result = extract_dict_from_response(raw)
     if not result:
         return [False]  # or handle as needed
@@ -166,3 +166,4 @@ def filter_journal_dataframe(
         print(f"[Model Filter] Exception occurred: {e}. ")
         print("[Model Filter] Returning partially filtered DataFrame.")
         return filtered_df
+
