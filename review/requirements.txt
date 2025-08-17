@@ -1,22 +1,12 @@
-import re
-import os
-import pandas as pd
-import numpy as np
-import sys
-from dotenv import load_dotenv
+
+pandas 
+numpy 
+scikit-learn
+more-itertools
+mistralai
+python-dotenv
+tqdm
+openai
 # Load environment variables from .env file
 load_dotenv()
-# Get the path to the .env file
-env_path = os.getenv('ENV_PATH', '.env')
-if not os.path.exists(env_path):
-    raise FileNotFoundError(f"Environment file not found: {env_path}")
-# Load the environment variables from the specified path
-load_dotenv(env_path)
-# Check if the required environment variables are set
-required_vars = ['REVIEW_DATA_PATH', 'REVIEW_OUTPUT_PATH']
-for var in required_vars:
-    if not os.getenv(var):
-        raise EnvironmentError(f"Required environment variable '{var}' is not set.")            
-# Get the paths from environment variables
-REVIEW_DATA_PATH = os.getenv('REVIEW_DATA_PATH')
-REVIEW_OUTPUT_PATH = os.getenv('REVIEW_OUTPUT_PATH')    
+

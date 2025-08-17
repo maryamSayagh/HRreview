@@ -107,7 +107,7 @@ def gpt_filter_by_dict_classification(
             temperature=0
         )
         raw = response.choices[0].message.content
-        raw = re.sub(r"```(?\:python)?", "", raw).strip()
+        raw = re.sub(r"```[\w]*", "", raw).strip()
         result = extract_dict_from_response(raw)
         if not result:
             print("Failed to parse model response for chunk:", items[:50])
