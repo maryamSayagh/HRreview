@@ -1,0 +1,47 @@
+title,authors,url
+Algorithmic decision-making safeguarded by human knowledge,[],https://doi.org/10.48550/arxiv.2211.11028
+Human intervention in automated decision-making: Toward the construction of contestable systems,"['Almada, M.']",https://doi.org/10.1145/3322640.3326699
+Decision-makers processing of AI algorithmic advice: Automation bias versus selective adherence.,"['Alon-Barkat, S.', 'Busuioc, M.']",https://arxiv.org/abs/2101.00000
+To trust or to think: Cognitive forcing functions can reduce overreliance on AI in ai-assisted decision-making.,"['Buçinca, Z., Malaya, M. B., & Gajos, K. Z']",https://doi.org/10.1145/3449287
+Designing AI support for human involvement in AI-assisted decision making: A taxonomy of human-AI interactions from a systematic review,"['Caballero, C. G.', 'Cho, S. M.', 'Ke, S.', 'Huang, C.', 'Unberath, M.']",https://doi.org/10.48550/arxiv.2310.19778
+How time pressure in different phases of decision-making influences human-AI collaboration,"['Cao, S.', 'Gomez, C.', 'Huang, C.']",https://doi.org/10.1145/3610068
+A case for humans-in-the-loop: Decisions in the presence of misestimated algorithmic scores,"['Fogliato, R.', 'De-Arteaga, M.', 'Chouldechova, A.']",https://doi.org/10.2139/ssrn.4050125
+Evaluating human-AI collaboration: A review and methodological framework,"['Fragiadakis, G.', 'Diou, C.', 'Kousiouris, G.', 'Nikolaidou, M.']",https://doi.org/10.48550/arxiv.2407.19098
+Human-AI collaboration models: Frameworks for effective integration of human oversight and AI insights in business processes,"['Frenette, J.']",https://doi.org/10.22214/ijraset.2024.66051
+A decision theoretic framework for measuring AI reliance,"['Guo, Z.', 'Wu, Y.', 'Hartline, J. D.', 'Hullman, J.']",https://doi.org/10.1145/3630106.3658901
+Fine-grained appropriate reliance: Human-AI collaboration with a multi-step transparent decision workflow for complex task decomposition,"['He, G.', 'Hemmer, P.', 'Vössing, M.', 'Schemmer, M.', 'Gadiraju, U.']",https://doi.org/10.48550/arxiv.2501.10909
+Human-AI collaboration in decision-making: Beyond learning to defer,[],https://doi.org/10.48550/arXiv.2206.13202
+"Reassuring, misleading, debunking: Comparing effects of XAI methods on human decisions","['Humer, C.', 'Hinterreiter, A.', 'Leichtmann, B.', 'Mara, M.', 'Streit, M.']",https://doi.org/10.1145/3665647
+Advancing human-AI complementarity: The impact of user expertise and algorithmic tuning on joint decision making,"['Inkpen, K.', 'Chappidi, S.', 'Mallari, K.', 'Nushi, B.', 'Ramesh, D. S.', 'Michelucci, P.', 'Mandava, V.', 'Vepvrek, L. H.', 'Quinn, G.']",https://doi.org/10.1145/3534561
+On the interdependence of reliance behavior and accuracy in AI-assisted decision-making,"['Jakubik, J.', 'Vössing, M.', 'Satzger, G.']",https://doi.org/10.48550/arXiv.2304.08804
+WHO should be first? How and when AI-human order influences procedural justice in a multistage decision-making process,"['Jiang, L.', 'Qin, X.', 'Yam, K. C.', 'Dong, X.', 'Chen, C.']",https://doi.org/10.1371/journal.pone.0284840
+Exploring the role of trust during human-AI collaboration in managerial decision-making processes,"['Keller, L.']",https://doi.org/10.22215/etd/2022-15336
+Learning when to advise human decision makers,[],https://doi.org/10.48550/arxiv.2209.13578
+Human-AI collaboration in decision-making: Beyond learning to defer,"['Leitão, D.', 'Saleiro, P.', 'Figueiredo, M. A. T.', 'Bizarro, P.']",https://doi.org/10.48550/arXiv.2206.13202
+As confidence aligns: Exploring the effect of AI confidence on human self-confidence in human-AI decision making,"['Li, J.', 'Yang, Y.', 'Liao, Q.', 'Zhang, J.', 'Lee, Y.']",https://doi.org/10.48550/arxiv.2501.12868
+"Utilizing human behavior modeling to manipulate explanations in AI-assisted decision making: The good, the bad, and the scary","['Li, Z.', 'Yin, M.']",https://doi.org/10.48550/arxiv.2411.10461
+Decoding AI's nudge: A unified framework to predict human behavior in AI-assisted decision making,"['Li, Z.', 'Lu, Z.', 'Yin, M.']",https://doi.org/10.1609/aaai.v38i9.28872
+Find the good. Seek the unity: A hidden Markov model of human-AI delegation dynamics,"['Liu, J.', 'Yue, W. T.', 'Leung, A. C. M.', 'Zhang, X.']",https://doi.org/10.25300/misq/2024/18232
+Modeling human trust and reliance in AI-assisted decision making: A Markovian approach,"['Lu, Z.', 'Yin, M.']",https://doi.org/10.1609/aaai.v37i5.25748
+Mix and match: Characterizing heterogeneous human behavior in AI-assisted decision making,"['Lu, Z.', 'Mahmoo, S. H. A.', 'Li, Z.', 'Yin, M.']",https://doi.org/10.1609/hcomp.v12i1.31604
+WHO should i trust: AI or myself? Leveraging human and AI correctness likelihood to promote appropriate trust in ai-assisted decision-making,"['Ma, S.', 'Lei, Y.', 'Wang, X.', 'Zheng, C.', 'Shi, C.', 'Yin, M.', 'Ma, X.']",https://doi.org/10.1145/3544548.3581058
+'are you really sure?' understanding the effects of human self-confidence calibration in AI-assisted decision making,"['Ma, S.', 'Wang, X.', 'Lei, Y.', 'Shi, C.', 'Yin, M.', 'Ma, X.']",https://doi.org/10.48550/arxiv.2403.09552
+Designing behavior-aware AI to improve the human-AI team performance in AI-assisted decision making,"['Mahmood, S. H. A.', 'Lu, Z.', 'Yin, M.']",https://doi.org/10.24963/ijcai.2024/344
+Doing AI: Algorithmic decision support as a human activity,"['Meyer, J.']",https://doi.org/10.48550/arxiv.2402.14674
+The impact of imperfect XAI on human-AI decision-making,"['Morrison, K.', 'Spitzer, P.', 'Turri, V.', 'Feng, M. C.', 'Kuhl, N.', 'Perer, A.']",https://doi.org/10.48550/arxiv.2307.13566
+Learning when to advise human decision makers,"['Noti, G.', 'Chen, Y.']",https://doi.org/10.48550/arXiv.2209.13578
+Learning when to advise human decision makers,"['Noti, G.', 'Chen, Y.']",https://doi.org/10.24963/ijcai.2023/339
+On the interdependence of reliance behavior and accuracy in AI-assisted decision-making,[],https://doi.org/10.3233/faia230074
+On the interdependence of reliance behavior and accuracy in ai-assisted decision-making,[],https://doi.org/10.48550/arxiv.2304.08804
+"AI reliance and decision quality: Fundamentals, interdependence, and the effects of interventions","['Schoeffer, J.', 'Jakubik, J.', 'Vössing, M.', 'Kühl, N.', 'Satzger, G.']",https://doi.org/10.31219/osf.io/cekm9
+Human-centered AI: Ensuring human control while increasing automation,"['Shneiderman, B.']",https://doi.org/10.1145/3538882.3542790
+Three challenges for AI-assisted decision-making,"['Steyvers, M.', 'Kumar, A.']",https://doi.org/10.1177/17456916231181102
+AI-assisted decision-making: A cognitive modeling approach to infer latent reliance strategies,"['Tejeda, H.', 'Kumar, A.', 'Smyth, P.', 'Steyvers, M.']",https://doi.org/10.1007/s42113-022-00157-y
+Exploring the role of trust during human-AI collaboration in managerial decision-making processes,"['Tuncer, S.', 'Ramírez, A. C.']",https://doi.org/10.1007/978-3-031-21707-4_39
+Will you accept the AI recommendation? Predicting human behavior in AI-assisted decision making,"['Wang, X., Lu, Z., & Yin, M']",https://doi.org/10.1145/3485447.3512240
+WHO should i trust: AI or myself? Leveraging human and AI correctness likelihood to promote appropriate trust in ai-assisted decision-making,[],https://doi.org/10.48550/arxiv.2301.05809
+Learning to advise humans by leveraging algorithm discretion,"['Wolczynski, N.', 'Saar-Tsechansky, M.', 'Wang, T.']",https://doi.org/10.48550/arXiv.2210.12849
+Learning to advise humans in highstakes settings,"['Wolczynski, N.', 'Saar-Tsechansky, M.', 'Wang, T.']",https://doi.org/10.48550/arXiv.2210.12849
+Modeling human-ai team decision making,"['Ye, W. C.', 'Bullo, F.', 'Friedkin, N. E.', 'Singh, A. K.']",https://doi.org/10.48550/arXiv.2201.02759
+Accounting for human engagement behavior to enhance AI-assisted decision making,"['Yin, M.']",https://doi.org/10.1609/aaaiss.v3i1.31184
+On the utility of accounting for human beliefs about AI behavior in human-AI collaboration,"['Yu, G.', 'Kasumba, R.', 'Ho, C.', 'Yeoh, W.']",https://doi.org/10.48550/arxiv.2406.06051
